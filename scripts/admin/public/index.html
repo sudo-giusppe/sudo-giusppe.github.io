@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>admin · JPBM</title>
+		<script src="/admin/assets/theme.js"></script>
+		<link rel="stylesheet" href="/admin/assets/global.css" />
+		<link rel="stylesheet" href="/admin/assets/admin.css" />
+	</head>
+	<body class="admin-body">
+		<a class="skip-link" href="#editor-pane">Saltar al editor</a>
+
+		<section id="login-view" class="login-view" aria-labelledby="login-title">
+			<div class="login-card">
+				<p class="login-kicker">JPBM · administración</p>
+				<h1 id="login-title">Escribe.</h1>
+				<p class="login-lede">
+					Editor local de notas. Solo escucha en tu máquina; la clave se
+					guarda como hash scrypt.
+				</p>
+				<form id="login-form" autocomplete="off">
+					<label class="field">
+						<span class="field-label">clave</span>
+						<input
+							id="password"
+							name="password"
+							type="password"
+							autocomplete="current-password"
+							required
+							autofocus
+						/>
+					</label>
+					<p id="login-error" class="form-error" role="alert" hidden></p>
+					<button class="btn btn-primary btn-wide" type="submit" id="login-submit">
+						entrar
+					</button>
+				</form>
+				<p class="login-hint">
+					¿La perdiste? <code>npm run admin:password -- --reset</code>
+				</p>
+			</div>
+		</section>
+
+		<div id="app-view" class="app" hidden>
+			<header class="topbar">
+				<div class="topbar-brand">
+					<span class="brand-mark" aria-hidden="true"></span>
+					<span class="topbar-name">JPBM</span>
+					<span class="topbar-sep" aria-hidden="true">/</span>
+					<span class="topbar-section">admin</span>
+				</div>
+				<div class="topbar-actions">
+					<a id="site-link" class="btn btn-ghost" href="#" target="_blank" rel="noreferrer">
+						ver sitio <span aria-hidden="true">↗</span>
+					</a>
+					<button id="theme-toggle" class="btn btn-ghost" type="button" aria-label="Cambiar tema">
+						tema
+					</button>
+					<button id="logout" class="btn btn-ghost" type="button">salir</button>
+				</div>
+			</header>
+
+			<div class="workspace">
+				<aside class="sidebar">
+					<div class="sidebar-top">
+						<button id="new-post" class="btn btn-primary btn-wide" type="button">
+							<span aria-hidden="true">+</span> nueva nota
+						</button>
+						<label class="search">
+							<span class="sr-only">Filtrar notas</span>
+							<input id="search" type="search" placeholder="filtrar por título o tema…" />
+						</label>
+					</div>
+					<nav class="post-nav" aria-label="Notas">
+						<ul id="post-list"></ul>
+						<p id="list-empty" class="list-empty" hidden>No hay notas todavía.</p>
+					</nav>
+					<div class="sidebar-foot">
+						<span id="post-count">0 notas</span>
+						<span class="sidebar-dot" aria-hidden="true"></span>
+						<span>local</span>
+					</div>
+				</aside>
+
+				<main class="main" id="editor-pane">
+					<div id="welcome" class="welcome">
+						<p class="kicker">editor</p>
+						<h1>Elige una nota<br />o empieza otra.</h1>
+						<p class="welcome-lede">
+							Los cambios se escriben en <code>src/content/posts</code> con
+							frontmatter y Markdown. En desarrollo el sitio se actualiza al
+							recargar; para publicar, haz commit y build.
+						</p>
+						<button id="welcome-new" class="btn btn-primary" type="button">
+							nueva nota
+						</button>
+					</div>
+
+					<form id="post-form" class="post-form" hidden novalidate>
+						<div class="form-head">
+							<div class="form-heading">
+								<p class="form-mode" id="form-mode">nueva nota</p>
+								<p class="form-slug">
+									<span>/blog/</span><span id="slug-preview">…</span>
+								</p>
+							</div>
+							<div class="form-actions">
+								<a id="view-post" class="btn btn-ghost" href="#" target="_blank" rel="noreferrer" hidden>
+									ver nota <span aria-hidden="true">↗</span>
+								</a>
+								<span id="save-state" class="save-state" data-state="idle">sin cambios</span>
+								<button type="button" class="btn btn-ghost is-danger" id="delete-post">
+									eliminar
+								</button>
+								<button type="submit" class="btn btn-primary" id="save-post">
+									guardar
+								</button>
+							</div>
+						</div>
+
+						<div class="fields">
+							<label class="field field-title">
+								<span class="field-label">título</span>
+								<input
+									id="title"
+									name="title"
+									type="text"
+									maxlength="180"
+									required
+									placeholder="Una idea que valga la pena"
+								/>
+								<span class="field-error" data-error="title"></span>
+							</label>
+
+							<div class="form-row">
+								<label class="field field-slug">
+									<span class="field-label">identificador</span>
+									<span class="slug-input">
+										<span class="slug-prefix">/blog/</span>
+										<input
+											id="slug"
+											name="slug"
+											type="text"
+											maxlength="96"
+											pattern="[a-z0-9]+(-[a-z0-9]+)*"
+											required
+											placeholder="mi-nota"
+											autocomplete="off"
+											spellcheck="false"
+										/>
+									</span>
+									<span class="field-error" data-error="slug"></span>
+								</label>
+
+								<label class="check">
+									<input id="draft" name="draft" type="checkbox" />
+									<span>
+										borrador
+										<span class="check-hint">no aparece en el sitio</span>
+									</span>
+								</label>
+							</div>
+
+							<label class="field">
+								<span class="field-label">resumen</span>
+								<textarea
+									id="description"
+									name="description"
+									rows="2"
+									maxlength="600"
+									required
+									placeholder="Una o dos frases que expliquen de qué trata."
+								></textarea>
+								<span class="field-meta">
+									<span class="field-error" data-error="description"></span>
+									<span id="desc-count">0/600</span>
+								</span>
+							</label>
+
+							<div class="form-row form-row-meta">
+								<label class="field">
+									<span class="field-label">fecha</span>
+									<input id="date" name="date" type="date" required />
+									<span class="field-error" data-error="date"></span>
+								</label>
+
+								<label class="field">
+									<span class="field-label">categoría</span>
+									<input
+										id="category"
+										name="category"
+										type="text"
+										list="category-list"
+										maxlength="40"
+										required
+										placeholder="autómatas"
+									/>
+									<datalist id="category-list"></datalist>
+									<span class="field-error" data-error="category"></span>
+								</label>
+
+								<label class="field field-minutes">
+									<span class="field-label">
+										minutos
+										<button
+											id="auto-minutes"
+											class="mini-action"
+											type="button"
+											title="Calcular a partir del texto"
+										>
+											auto
+										</button>
+									</span>
+									<input id="minutes" name="minutes" type="number" min="1" max="600" required />
+									<span class="field-error" data-error="minutes"></span>
+								</label>
+
+								<label class="field">
+									<span class="field-label">idioma</span>
+									<select id="lang" name="lang">
+										<option value="es">español</option>
+										<option value="en">english</option>
+									</select>
+									<span class="field-error" data-error="lang"></span>
+								</label>
+
+								<label class="field">
+									<span class="field-label">fondo</span>
+									<select id="field" name="field"></select>
+									<span class="field-error" data-error="field"></span>
+								</label>
+							</div>
+
+							<p id="form-error" class="form-error" role="alert" hidden></p>
+						</div>
+
+						<div class="mobile-tabs" role="tablist" aria-label="Vista del editor">
+							<button type="button" class="is-active" data-view="write" role="tab" aria-selected="true">
+								escribir
+							</button>
+							<button type="button" data-view="preview" role="tab" aria-selected="false">
+								vista previa
+							</button>
+						</div>
+
+						<div class="editor-frame" id="editor-frame" data-mobile-view="write">
+							<section class="pane pane-write">
+								<div class="pane-head">
+									<span class="pane-title">markdown</span>
+									<span class="pane-note">se guarda como cuerpo del post</span>
+								</div>
+								<div class="toolbar" role="toolbar" aria-label="Formato">
+									<button type="button" data-action="h2" title="Sección (##)">H2</button>
+									<button type="button" data-action="h3" title="Subsección (###)">H3</button>
+									<span class="toolbar-sep" aria-hidden="true"></span>
+									<button type="button" data-action="bold" title="Negrita (⌘B)"><strong>B</strong></button>
+									<button type="button" data-action="italic" title="Cursiva (⌘I)"><em>I</em></button>
+									<button type="button" data-action="code" title="Código en línea">code</button>
+									<button type="button" data-action="link" title="Enlace (⌘K)">enlace</button>
+									<span class="toolbar-sep" aria-hidden="true"></span>
+									<button type="button" data-action="quote" title="Cita">cita</button>
+									<button type="button" data-action="ul" title="Lista">lista</button>
+									<button type="button" data-action="ol" title="Lista numerada">1.</button>
+									<button type="button" data-action="table" title="Tabla">tabla</button>
+									<span class="toolbar-sep" aria-hidden="true"></span>
+									<button type="button" data-action="figure" title="Figura con pie">figura</button>
+									<button type="button" data-action="note" title="Nota destacada">nota</button>
+									<button type="button" data-action="equation" title="Ecuación MathML">∑</button>
+									<button type="button" data-action="pre" title="Bloque de código">pre</button>
+									<button type="button" data-action="image" title="Subir imagen">imagen</button>
+								</div>
+								<textarea
+									id="markdown"
+									name="markdown"
+									spellcheck="false"
+									wrap="soft"
+									placeholder="Escribe en Markdown. Puedes intercalar HTML: figuras, notas, SVG y MathML funcionan igual que en las notas existentes."
+								></textarea>
+								<div class="pane-foot">
+									<span id="word-count">0 palabras</span>
+									<span id="read-time">—</span>
+									<span class="pane-hint">⌘S guardar · Tab indentar</span>
+								</div>
+							</section>
+
+							<section class="pane pane-preview">
+								<div class="pane-head">
+									<span class="pane-title">vista previa</span>
+									<span class="pane-note" id="preview-state">en vivo</span>
+								</div>
+								<iframe
+									id="preview"
+									title="Vista previa del post"
+									sandbox="allow-same-origin"
+								></iframe>
+							</section>
+						</div>
+					</form>
+				</main>
+			</div>
+		</div>
+
+		<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+		<input
+			type="file"
+			id="file-input"
+			accept="image/png,image/jpeg,image/gif,image/webp,image/avif"
+			hidden
+		/>
+		<script type="module" src="/admin/assets/admin.js"></script>
+	</body>
+</html>

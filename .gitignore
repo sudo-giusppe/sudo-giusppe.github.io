@@ -7,6 +7,9 @@ dist/
 # dependencies
 node_modules/
 
+# admin local: papelera y temporales
+.admin/
+
 # logs
 npm-debug.log*
 yarn-debug.log*

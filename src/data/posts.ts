@@ -1,3 +1,4 @@
+import { getCollection, type CollectionEntry } from "astro:content";
 import type { FieldVariant } from "./fields";
 
 export interface Post {
@@ -13,45 +14,59 @@ export interface Post {
 	field: FieldVariant;
 }
 
-/** Newest first. */
-export const posts: Post[] = [
-	{
-		title: "La hormiga de Langton",
-		description:
-			"Dos reglas, dos colores y una hormiga que termina construyendo una autopista: cómo el comportamiento global emerge de decisiones locales.",
-		date: "2026-10-24",
-		category: "autómatas",
-		minutes: 8,
-		href: "/blog/langtons-ant",
-		lang: "es",
-		field: "highway",
-	},
-	{
-		title: "Algoritmos genéticos",
-		description:
-			"Selección, cruce y mutación: cómo una población de soluciones mejora sin gradientes, y por qué no es una varita mágica.",
-		date: "2026-10-18",
-		category: "algoritmos",
-		minutes: 11,
-		href: "/blog/genetic-algorithms",
-		lang: "es",
-		field: "duet",
-	},
-];
+export interface Category {
+	value: string;
+	label: string;
+}
 
-export const categories = [
-	{ value: "all", label: "todo" },
-	{ value: "autómatas", label: "autómatas" },
-	{ value: "algoritmos", label: "algoritmos" },
-];
+export function toPost(entry: CollectionEntry<"posts">): Post {
+	return {
+		title: entry.data.title,
+		description: entry.data.description,
+		date: entry.data.date,
+		category: entry.data.category,
+		minutes: entry.data.minutes,
+		href: `/blog/${entry.slug}`,
+		lang: entry.data.lang,
+		field: entry.data.field,
+	};
+}
 
-export function countFor(value: string): number {
+/** Published posts, newest first. Drafts are left out unless requested. */
+export async function getPosts(includeDrafts = false): Promise<Post[]> {
+	const entries = await getCollection(
+		"posts",
+		({ data }) => includeDrafts || !data.draft,
+	);
+	return entries
+		.map(toPost)
+		.sort(
+			(a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title),
+		);
+}
+
+/** Tabs for the archive, in order of first appearance. */
+export function categoriesFor(posts: Post[]): Category[] {
+	const seen = new Set<string>();
+	const values: Category[] = [{ value: "all", label: "todo" }];
+	for (const post of posts) {
+		if (seen.has(post.category)) continue;
+		seen.add(post.category);
+		values.push({ value: post.category, label: post.category });
+	}
+	return values;
+}
+
+export function countFor(posts: Post[], value: string): number {
 	if (value === "all") return posts.length;
 	return posts.filter((post) => post.category === value).length;
 }
 
 /** The post before and after in publication order. */
-export function adjacent(href: string): {
+export function adjacent(
+	posts: Post[],
+	href: string,
+): {
 	previous?: Post;
 	next?: Post;
 } {

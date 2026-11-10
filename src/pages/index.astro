@@ -3,9 +3,9 @@ import Layout from "../layouts/Layout.astro";
 import AntField from "../components/AntField.astro";
 import Plot from "../components/Plot.astro";
 import MagneticLink from "../components/MagneticLink.astro";
-import { posts } from "../data/posts";
+import { getPosts } from "../data/posts";
 
-const latest = posts.slice(0, 3);
+const latest = (await getPosts()).slice(0, 3);
 ---
 
 <Layout title="Inicio">

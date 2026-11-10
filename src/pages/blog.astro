@@ -2,11 +2,12 @@
 import Layout from "../layouts/Layout.astro";
 import AntField from "../components/AntField.astro";
 import SmoothTabs from "../components/SmoothTabs.astro";
-import { categories, countFor, posts } from "../data/posts";
+import { categoriesFor, countFor, getPosts } from "../data/posts";
 
-const tabs = categories.map((category) => ({
+const posts = await getPosts();
+const tabs = categoriesFor(posts).map((category) => ({
 	...category,
-	count: countFor(category.value),
+	count: countFor(posts, category.value),
 }));
 ---
 

@@ -1,14 +1,14 @@
 ---
 import Layout from "./Layout.astro";
 import AntField from "../components/AntField.astro";
-import { adjacent, type Post } from "../data/posts";
+import { adjacent, getPosts, type Post } from "../data/posts";
 
 interface Props {
 	post: Post;
 }
 
 const { post } = Astro.props;
-const { previous, next } = adjacent(post.href);
+const { previous, next } = adjacent(await getPosts(), post.href);
 ---
 
 <Layout title={post.title} description={post.description}>
