@@ -525,6 +525,15 @@ code {
 	text-transform: uppercase;
 }
 
+.badge-lang {
+	padding: 0 0.25rem;
+	border: 1px solid var(--rule-strong);
+	color: var(--muted);
+	font-size: 0.52rem;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+}
+
 .list-empty {
 	padding: 1rem 0.6rem;
 	font-family: var(--mono);

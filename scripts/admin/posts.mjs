@@ -7,7 +7,9 @@ import { AdminError } from "./errors.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(HERE, "../..");
-export const POSTS_DIR = path.join(ROOT, "src/content/posts");
+export const CONTENT_DIR = path.join(ROOT, "src/content");
+export const POSTS_DIR = path.join(CONTENT_DIR, "posts");
+export const POSTS_EN_DIR = path.join(CONTENT_DIR, "posts-en");
 export const PUBLIC_DIR = path.join(ROOT, "public");
 export const IMAGES_DIR = path.join(PUBLIC_DIR, "images");
 export const TRASH_DIR = path.join(ROOT, ".admin/trash");
@@ -35,6 +37,8 @@ export function slugify(value) {
 		.replace(/-+$/g, "");
 }
 
+const LANG_DIRS = { es: POSTS_DIR, en: POSTS_EN_DIR };
+
 function assertSlug(slug) {
 	if (
 		typeof slug !== "string" ||
@@ -46,9 +50,22 @@ function assertSlug(slug) {
 	return slug;
 }
 
-function postFile(slug) {
+function assertLang(lang) {
+	if (lang !== "es" && lang !== "en") {
+		throw new AdminError(400, "El idioma del post no es válido.");
+	}
+	return lang;
+}
+
+function postDir(lang) {
+	return LANG_DIRS[assertLang(lang)];
+}
+
+export { assertLang };
+
+function postFile(slug, lang) {
 	assertSlug(slug);
-	return path.join(POSTS_DIR, `${slug}.md`);
+	return path.join(postDir(lang), `${slug}.md`);
 }
 
 function normalizeMeta(data) {
@@ -186,27 +203,31 @@ async function exists(file) {
 
 export async function listPosts() {
 	await fs.mkdir(POSTS_DIR, { recursive: true });
-	const entries = await fs.readdir(POSTS_DIR, { withFileTypes: true });
+	await fs.mkdir(POSTS_EN_DIR, { recursive: true });
 	const posts = [];
 
-	for (const entry of entries) {
-		if (!entry.isFile() || !entry.name.endsWith(".md")) continue;
-		const slug = entry.name.slice(0, -3);
-		if (!SLUG_PATTERN.test(slug)) continue;
-		const file = path.join(POSTS_DIR, entry.name);
-		try {
-			const [raw, stat] = await Promise.all([
-				fs.readFile(file, "utf8"),
-				fs.stat(file),
-			]);
-			const parsed = matter(raw);
-			posts.push({
-				slug,
-				...normalizeMeta(parsed.data),
-				updatedAt: stat.mtime.toISOString(),
-			});
-		} catch (error) {
-			console.error(`[admin] no se pudo leer ${entry.name}:`, error.message);
+	for (const [lang, dir] of Object.entries(LANG_DIRS)) {
+		const entries = await fs.readdir(dir, { withFileTypes: true });
+		for (const entry of entries) {
+			if (!entry.isFile() || !entry.name.endsWith(".md")) continue;
+			const slug = entry.name.slice(0, -3);
+			if (!SLUG_PATTERN.test(slug)) continue;
+			const file = path.join(dir, entry.name);
+			try {
+				const [raw, stat] = await Promise.all([
+					fs.readFile(file, "utf8"),
+					fs.stat(file),
+				]);
+				const parsed = matter(raw);
+				posts.push({
+					slug,
+					lang,
+					...normalizeMeta(parsed.data),
+					updatedAt: stat.mtime.toISOString(),
+				});
+			} catch (error) {
+				console.error(`[admin] no se pudo leer ${entry.name}:`, error.message);
+			}
 		}
 	}
 
@@ -215,8 +236,8 @@ export async function listPosts() {
 	);
 }
 
-export async function readPost(slug) {
-	const file = postFile(slug);
+export async function readPost(slug, lang) {
+	const file = postFile(slug, lang);
 	let raw;
 	try {
 		raw = await fs.readFile(file, "utf8");
@@ -229,6 +250,7 @@ export async function readPost(slug) {
 	const parsed = matter(raw);
 	return {
 		slug,
+		lang,
 		...normalizeMeta(parsed.data),
 		markdown: parsed.content.replace(/^\n/, ""),
 	};
@@ -239,28 +261,24 @@ export async function createPost(input) {
 	if (!ok) {
 		throw new AdminError(422, "Revisa los campos marcados.", { fields: errors });
 	}
-	const file = postFile(post.slug);
+	const file = postFile(post.slug, post.lang);
 	if (await exists(file)) {
 		throw new AdminError(409, "Ya existe una nota con ese identificador.", {
 			fields: { slug: "Este identificador ya está en uso." },
 		});
 	}
 	await writeAtomic(file, serialize(post));
-	return readPost(post.slug);
+	return readPost(post.slug, post.lang);
 }
 
 export async function updatePost(originalSlug, input) {
-	const source = postFile(originalSlug);
-	if (!(await exists(source))) {
-		throw new AdminError(404, "Esa nota no existe.");
-	}
-
 	const { ok, errors, post } = validatePost(input);
 	if (!ok) {
 		throw new AdminError(422, "Revisa los campos marcados.", { fields: errors });
 	}
 
-	const target = postFile(post.slug);
+	const source = postFile(originalSlug, input.originalLang ?? post.lang);
+	const target = postFile(post.slug, post.lang);
 	if (target !== source && (await exists(target))) {
 		throw new AdminError(409, "Ya existe una nota con ese identificador.", {
 			fields: { slug: "Este identificador ya está en uso." },
@@ -269,17 +287,17 @@ export async function updatePost(originalSlug, input) {
 
 	await writeAtomic(target, serialize(post));
 	if (target !== source) await fs.rm(source, { force: true });
-	return readPost(post.slug);
+	return readPost(post.slug, post.lang);
 }
 
-export async function deletePost(slug) {
-	const file = postFile(slug);
+export async function deletePost(slug, lang) {
+	const file = postFile(slug, lang);
 	if (!(await exists(file))) {
 		throw new AdminError(404, "Esa nota no existe.");
 	}
 	await fs.mkdir(TRASH_DIR, { recursive: true });
 	const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-	const destination = path.join(TRASH_DIR, `${slug}--${stamp}.md`);
+	const destination = path.join(TRASH_DIR, `${lang}--${slug}--${stamp}.md`);
 	try {
 		await fs.rename(file, destination);
 	} catch (error) {

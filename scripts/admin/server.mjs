@@ -13,6 +13,7 @@ import {
 } from "./auth.mjs";
 import { AdminError } from "./errors.mjs";
 import {
+	assertLang,
 	createPost,
 	deletePost,
 	fieldOptions,
@@ -459,17 +460,24 @@ async function handleApi(req, res, pathname) {
 			throw new AdminError(400, "Identificador no válido.");
 		}
 
+		const query = new URL(req.url, "http://localhost").searchParams;
+		const lang = assertLang(query.get("lang"));
+
 		if (req.method === "GET") {
-			sendJson(res, 200, { post: await readPost(slug) });
+			sendJson(res, 200, { post: await readPost(slug, lang) });
 			return;
 		}
 		if (req.method === "PUT") {
-			const post = await updatePost(slug, await readJson(req));
+			const body = await readJson(req);
+			const post = await updatePost(slug, {
+				...body,
+				originalLang: lang,
+			});
 			sendJson(res, 200, { post });
 			return;
 		}
 		if (req.method === "DELETE") {
-			sendJson(res, 200, { deleted: await deletePost(slug) });
+			sendJson(res, 200, { deleted: await deletePost(slug, lang) });
 			return;
 		}
 	}

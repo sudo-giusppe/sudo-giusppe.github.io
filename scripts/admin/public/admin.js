@@ -266,8 +266,10 @@ function renderList() {
 		const button = document.createElement("button");
 		button.type = "button";
 		button.className = "post-item";
-		if (state.current?.slug === post.slug) button.classList.add("is-active");
-		button.addEventListener("click", () => openPost(post.slug));
+		if (state.current?.slug === post.slug && state.current?.lang === post.lang) {
+			button.classList.add("is-active");
+		}
+		button.addEventListener("click", () => openPost(post.slug, post.lang));
 
 		const top = document.createElement("span");
 		top.className = "post-item-top";
@@ -287,6 +289,12 @@ function renderList() {
 		const meta = document.createElement("span");
 		meta.className = "post-item-meta";
 		meta.textContent = post.category;
+		if (post.lang === "en") {
+			const lang = document.createElement("span");
+			lang.className = "badge-lang";
+			lang.textContent = "EN";
+			top.append(lang);
+		}
 
 		button.append(top, title, meta);
 		item.append(button);
@@ -302,11 +310,19 @@ function renderList() {
 	el.postCount.textContent = `${total} ${total === 1 ? "nota" : "notas"}`;
 }
 
-async function openPost(slug) {
-	if (state.current?.slug === slug && !state.dirty) return;
+async function openPost(slug, lang) {
+	if (
+		state.current?.slug === slug &&
+		state.current?.lang === lang &&
+		!state.dirty
+	) {
+		return;
+	}
 	if (!confirmDiscard()) return;
 	try {
-		const data = await api(`/admin/api/posts/${encodeURIComponent(slug)}`);
+		const data = await api(
+			`/admin/api/posts/${encodeURIComponent(slug)}?lang=${lang === "en" ? "en" : "es"}`,
+		);
 		fillForm(data.post, false);
 	} catch (error) {
 		toast(error.message || "No se pudo abrir la nota.", "error");
@@ -315,14 +331,18 @@ async function openPost(slug) {
 
 async function openFromHash() {
 	if (!el.form.hidden || state.dirty) return;
-	let slug = "";
+	let key = "";
 	try {
-		slug = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
+		key = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
 	} catch {
 		return;
 	}
-	if (slug && state.posts.some((post) => post.slug === slug)) {
-		await openPost(slug);
+	const [slug, lang] = key.split(":");
+	if (
+		slug &&
+		state.posts.some((post) => post.slug === slug && post.lang === (lang || "es"))
+	) {
+		await openPost(slug, lang || "es");
 	}
 }
 
@@ -349,6 +369,7 @@ function newPost() {
 function fillForm(post, isNew) {
 	state.current = post;
 	state.originalSlug = isNew ? null : post.slug;
+	state.originalLang = post.lang || "es";
 	state.dirty = false;
 	state.saving = false;
 	state.slugTouched = !isNew;
@@ -380,7 +401,7 @@ function fillForm(post, isNew) {
 		history.replaceState(
 			null,
 			"",
-			`#${encodeURIComponent(post.slug)}`,
+			`#${encodeURIComponent(post.slug)}:${post.lang === "en" ? "en" : "es"}`,
 		);
 	}
 
@@ -434,7 +455,7 @@ async function save() {
 		const isNew = !state.originalSlug;
 		const path = isNew
 			? "/admin/api/posts"
-			: `/admin/api/posts/${encodeURIComponent(state.originalSlug)}`;
+			: `/admin/api/posts/${encodeURIComponent(state.originalSlug)}?lang=${state.originalLang ?? "es"}`;
 		const data = await api(path, {
 			method: isNew ? "POST" : "PUT",
 			body: JSON.stringify(collect()),
@@ -457,8 +478,11 @@ async function save() {
 
 function absorbSaved(post) {
 	const oldSlug = state.originalSlug;
+	const oldLang = state.originalLang;
 	state.posts = state.posts.filter(
-		(item) => item.slug !== oldSlug && item.slug !== post.slug,
+		(item) =>
+			!(item.slug === oldSlug && item.lang === oldLang) &&
+			!(item.slug === post.slug && item.lang === post.lang),
 	);
 	state.posts.push({
 		slug: post.slug,
@@ -484,9 +508,14 @@ function absorbSaved(post) {
 
 	state.current = post;
 	state.originalSlug = post.slug;
+	state.originalLang = post.lang;
 	state.dirty = false;
 	state.slugTouched = true;
-	history.replaceState(null, "", `#${encodeURIComponent(post.slug)}`);
+	history.replaceState(
+		null,
+		"",
+		`#${encodeURIComponent(post.slug)}:${post.lang === "en" ? "en" : "es"}`,
+	);
 
 	el.slug.value = post.slug;
 	el.title.value = post.title;
@@ -521,11 +550,15 @@ async function removeCurrent() {
 		return;
 	}
 	try {
-		await api(`/admin/api/posts/${encodeURIComponent(state.originalSlug)}`, {
-			method: "DELETE",
-		});
+		await api(
+			`/admin/api/posts/${encodeURIComponent(state.originalSlug)}?lang=${state.originalLang ?? "es"}`,
+			{
+				method: "DELETE",
+			},
+		);
 		state.posts = state.posts.filter(
-			(post) => post.slug !== state.originalSlug,
+			(post) =>
+				!(post.slug === state.originalSlug && post.lang === state.originalLang),
 		);
 		state.current = null;
 		state.originalSlug = null;
@@ -601,6 +634,9 @@ function showFieldErrors(fields) {
 
 function updateSlugPreview() {
 	const slug = el.slug.value.trim();
+	const lang = el.lang.value === "en" ? "/en/blog/" : "/blog/";
+	const prefix = document.getElementById("slug-prefix");
+	if (prefix) prefix.textContent = lang;
 	el.slugPreview.textContent = slug || "…";
 }
 
@@ -624,7 +660,8 @@ function updateSiteLinks() {
 	const published = Boolean(post && !post.draft && !state.dirty && state.originalSlug);
 	el.viewPost.hidden = !published;
 	if (published) {
-		el.viewPost.href = `${base}/blog/${encodeURIComponent(post.slug)}`;
+		const lang = post.lang === "en" ? "/en" : "";
+		el.viewPost.href = `${base}${lang}/blog/${encodeURIComponent(post.slug)}`;
 	}
 }
 
@@ -972,9 +1009,13 @@ function bindEvents() {
 		schedulePreview();
 	});
 
-	for (const input of [el.date, el.category, el.lang, el.field]) {
+	for (const input of [el.date, el.category, el.field]) {
 		input.addEventListener("input", markDirty);
 	}
+	el.lang.addEventListener("input", () => {
+		markDirty();
+		updateSlugPreview();
+	});
 	el.minutes.addEventListener("input", () => {
 		state.autoMinutes = false;
 		markDirty();
