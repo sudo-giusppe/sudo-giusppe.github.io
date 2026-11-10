@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://giuseppeblog.onrender.com',
+  site: 'https://sudo-giusppe.github.io',
   prefetch: true,
   server: {
     host: '0.0.0.0',
