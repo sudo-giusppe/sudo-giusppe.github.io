@@ -9,6 +9,9 @@ Astro y Motion, sin frameworks de UI ni rastreadores.
 - **Editor local** — `npm run admin` levanta un servidor Node en
   `127.0.0.1:4321/admin` para escribir las notas. No forma parte de la build
   pública: el sitio desplegado no tiene ruta `/admin`.
+- **Bilingüe** — español en `/` e inglés en `/en/…`. El botón EN/ES del
+  header alterna entre traducciones; las notas viven en
+  `src/content/posts` (es) y `src/content/posts-en` (en) con el mismo slug.
 - **Motion** (`motion`) — animaciones con su API vanilla: revelado de secciones,
   entrada escalonada de las filas del archivo, mensajes de la sala y el trazo
   animado del gráfico de portada.
@@ -45,8 +48,11 @@ Astro y Motion, sin frameworks de UI ni rastreadores.
 ├── src/
 │   ├── components/             # Header, Footer, Plot, AntField, SmoothTabs, etc.
 │   ├── content/
-│   │   ├── config.ts           # esquema del frontmatter
-│   │   └── posts/*.md          # una nota por archivo
+│   │   ├── config.ts           # esquema del frontmatter (posts y posts-en)
+│   │   ├── posts/*.md          # una nota por archivo (español)
+│   │   └── posts-en/*.md       # traducciones, mismo slug que el original
+│   ├── i18n/
+│   │   └── ui.ts               # textos de la interfaz por idioma
 │   ├── data/
 │   │   ├── posts.ts            # consultas sobre la colección
 │   │   └── fields.json         # variantes del campo de fondo
@@ -59,7 +65,8 @@ Astro y Motion, sin frameworks de UI ni rastreadores.
 │   │   ├── about.astro
 │   │   ├── forum.astro         # sala de demostración (estado en memoria)
 │   │   ├── 404.astro
-│   │   └── blog/[slug].astro   # nota generada desde content
+│   │   ├── blog/[slug].astro   # nota generada desde content
+│   │   └── en/                 # espejo en inglés (/en/…)
 │   └── styles/global.css
 └── astro.config.mjs
 ```
@@ -109,7 +116,8 @@ npm run admin:password -- --reset
 
 El editor permite:
 
-- Crear, editar, renombrar y eliminar notas (se mueven a `.admin/trash/`).
+- Crear, editar, renombrar y eliminar notas (se mueven a `.admin/trash/`),
+  en español o en inglés (colecciones `posts` y `posts-en`).
 - Todos los campos de la colección: título, resumen, fecha, categoría,
   minutos, idioma, variante de fondo y estado de borrador.
 - Escribir en Markdown con barra de formato y vista previa en vivo con los

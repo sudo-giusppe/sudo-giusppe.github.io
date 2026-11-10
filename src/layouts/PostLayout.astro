@@ -2,20 +2,31 @@
 import Layout from "./Layout.astro";
 import AntField from "../components/AntField.astro";
 import { adjacent, getPosts, type Post } from "../data/posts";
+import { t, type Locale } from "../i18n/ui";
 
 interface Props {
 	post: Post;
+	/** URL of the translated version, when it exists. */
+	altHref?: string | null;
 }
 
-const { post } = Astro.props;
-const { previous, next } = adjacent(await getPosts(), post.href);
+const { post, altHref = null } = Astro.props;
+const locale: Locale = post.lang;
+const { previous, next } = adjacent(await getPosts(locale), post.href);
 ---
 
-<Layout title={post.title} description={post.description}>
+<Layout
+	title={post.title}
+	description={post.description}
+	locale={locale}
+	alt={altHref ? { href: altHref } : null}
+>
 	<article class="article" lang={post.lang}>
 		<header class="article-head" data-reveal>
-			<nav class="breadcrumb" aria-label="Ruta">
-				<a href="/blog">archivo</a>
+			<nav class="breadcrumb" aria-label={t(locale, "post.breadcrumb.aria")}>
+				<a href={locale === "en" ? "/en/blog" : "/blog"}>
+					{t(locale, "post.archive")}
+				</a>
 				<span class="slash" aria-hidden="true">/</span>
 				<span>{post.category}</span>
 			</nav>
@@ -24,7 +35,7 @@ const { previous, next } = adjacent(await getPosts(), post.href);
 			<p class="article-meta">
 				<time datetime={post.date}>{post.date}</time>
 				<span class="sep" aria-hidden="true">·</span>
-				<span>{post.minutes} min de lectura</span>
+				<span>{post.minutes} {t(locale, "post.read")}</span>
 			</p>
 		</header>
 
@@ -35,11 +46,11 @@ const { previous, next } = adjacent(await getPosts(), post.href);
 		<footer class="article-foot">
 			<span class="end-mark" aria-hidden="true">∎</span>
 
-			<nav class="pager" aria-label="Otras notas">
+			<nav class="pager" aria-label={t(locale, "post.pager.aria")}>
 				{
 					previous && (
 						<a class="pager-link" href={previous.href}>
-							<span class="pager-label">← anterior</span>
+							<span class="pager-label">{t(locale, "post.prev")}</span>
 							<span class="pager-title">{previous.title}</span>
 						</a>
 					)
@@ -47,14 +58,16 @@ const { previous, next } = adjacent(await getPosts(), post.href);
 				{
 					next && (
 						<a class="pager-link" href={next.href}>
-							<span class="pager-label">siguiente →</span>
+							<span class="pager-label">{t(locale, "post.next")}</span>
 							<span class="pager-title">{next.title}</span>
 						</a>
 					)
 				}
 			</nav>
 
-			<a class="backlink" href="/blog">← volver al archivo</a>
+			<a class="backlink" href={locale === "en" ? "/en/blog" : "/blog"}>
+				{t(locale, "post.back")}
+			</a>
 		</footer>
 
 		<AntField variant={post.field} intensity="quiet" />

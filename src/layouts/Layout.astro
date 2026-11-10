@@ -1,26 +1,42 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import { t, type Locale } from "../i18n/ui";
 import "../styles/global.css";
 
 interface Props {
 	title: string;
 	description?: string;
+	locale?: Locale;
+	/** URL of this page in the other language, when it exists. */
+	alt?: { href: string } | null;
 }
 
-const {
-	title,
-	description = "Notas de matemática, sistemas computacionales y código, por Giuseppe Barraza.",
-} = Astro.props;
+const { title, locale = "es", alt = null, description = t(locale, "site.description") } =
+	Astro.props;
 
 const fullTitle =
-	title === "Inicio"
-		? "JPBM — notas de matemática y sistemas"
+	title === t(locale, "home.title")
+		? t(locale, "site.fullTitle")
 		: `${title} · JPBM`;
+
+const otherLang = locale === "es" ? "en" : "es";
+/** Spanish URL of this page, used as hreflang default. */
+const defaultHref =
+	locale === "es"
+		? Astro.url.pathname
+		: Astro.url.pathname.replace(/^\/en(?=\/|$)/, "") || "/";
+
+const canonical = Astro.site
+	? new URL(Astro.url.pathname, Astro.site).href
+	: null;
+const altUrl =
+	alt && Astro.site ? new URL(alt.href, Astro.site).href : null;
+const defaultUrl = Astro.site ? new URL(defaultHref, Astro.site).href : null;
 ---
 
 <!doctype html>
-<html lang="es" class="no-js">
+<html lang={locale} class="no-js">
 	<head>
 		<meta charset="UTF-8" />
 		<script is:inline>
@@ -46,7 +62,7 @@ const fullTitle =
 		<meta property="og:title" content={fullTitle} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="website" />
-		<meta property="og:locale" content="es_CL" />
+		<meta property="og:locale" content={locale === "es" ? "es_CL" : "en_US"} />
 		<meta name="twitter:card" content="summary" />
 		<meta
 			name="theme-color"
@@ -73,20 +89,28 @@ const fullTitle =
 			crossorigin
 		/>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		{canonical && <link rel="canonical" href={canonical} />}
+		{altUrl && <link rel="alternate" hreflang={otherLang} href={altUrl} />}
+		{
+			defaultUrl && locale === "es" && (
+				<link rel="alternate" hreflang="es" href={defaultUrl} />
+			)
+		}
+		{defaultUrl && <link rel="alternate" hreflang="x-default" href={defaultUrl} />}
 		<title>{fullTitle}</title>
 	</head>
 	<body>
-		<a class="skip-link" href="#main">Saltar al contenido</a>
+		<a class="skip-link" href="#main">{t(locale, "skip.content")}</a>
 		<div class="progress" aria-hidden="true">
 			<span class="progress__bar"></span>
 		</div>
-		<Header />
+		<Header locale={locale} altHref={alt?.href ?? null} />
 		<main id="main" class="site-main">
 			<div class="wrap">
 				<slot />
 			</div>
 		</main>
-		<Footer />
+		<Footer locale={locale} />
 
 		<script>
 			import { animate, scroll, stagger } from "motion";

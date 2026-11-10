@@ -295,6 +295,18 @@ input {
 	transform: scaleX(1);
 }
 
+.lang-toggle {
+	padding-inline: 0.42rem;
+	border: 1px solid var(--rule);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+}
+
+.lang-toggle:hover,
+.lang-toggle.is-active {
+	border-color: var(--accent);
+}
+
 .theme-toggle {
 	display: grid;
 	place-items: center;

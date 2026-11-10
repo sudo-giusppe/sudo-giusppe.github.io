@@ -1,4 +1,6 @@
 ---
+import { t, type Locale } from "../i18n/ui";
+
 interface Tab {
 	value: string;
 	label: string;
@@ -8,13 +10,14 @@ interface Tab {
 interface Props {
 	items: Tab[];
 	total: number;
+	locale?: Locale;
 }
 
-const { items, total } = Astro.props;
+const { items, total, locale = "es" } = Astro.props;
 ---
 
 <div class="tabs" data-tabs>
-	<div class="tabs-list" role="group" aria-label="Filtrar notas">
+	<div class="tabs-list" role="group" aria-label={t(locale, "tabs.filter.aria")}>
 		{
 			items.map((item, index) => (
 				<button
@@ -32,8 +35,14 @@ const { items, total } = Astro.props;
 			))
 		}
 	</div>
-	<p class="tabs-status" data-tabs-status aria-live="polite">
-		{String(total).padStart(2, "0")} notas
+	<p
+		class="tabs-status"
+		data-tabs-status
+		data-word={t(locale, "tabs.note")}
+		data-word-plural={t(locale, "tabs.notes")}
+		aria-live="polite"
+	>
+		{String(total).padStart(2, "0")} {t(locale, "tabs.notes")}
 	</p>
 </div>
 
@@ -58,7 +67,9 @@ const { items, total } = Astro.props;
 			});
 
 			status.textContent = `${String(visible).padStart(2, "0")} ${
-				visible === 1 ? "nota" : "notas"
+				visible === 1
+					? status.dataset.word
+					: status.dataset.wordPlural
 			}`;
 
 			if (!reduce) {

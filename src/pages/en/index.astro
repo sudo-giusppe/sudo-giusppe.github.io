@@ -1,0 +1,75 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import AntField from "../../components/AntField.astro";
+import Plot from "../../components/Plot.astro";
+import MagneticLink from "../../components/MagneticLink.astro";
+import { getPosts } from "../../data/posts";
+
+const latest = (await getPosts("en")).slice(0, 3);
+---
+
+<Layout title="Home" locale="en" alt={{ href: "/" }}>
+	<section class="intro" data-reveal>
+		<p class="kicker">recent</p>
+		<h1 class="intro-title">Recent notes</h1>
+		<p class="lede">
+			Math, computing systems and code. I write to sort out what I learn and
+			to keep a record of what I don't want to deduce again.
+		</p>
+	</section>
+
+	<div data-reveal>
+		<Plot />
+	</div>
+
+	<div class="section-head" data-reveal>
+		<h2>latest entries</h2>
+	</div>
+
+	<ol class="entries">
+		{
+			latest.map((post) => (
+				<li data-reveal>
+					<article class="entry">
+						<a class="entry-link" href={post.href}>
+							<div class="entry-meta">
+								<time datetime={post.date}>{post.date}</time>
+								<span class="sep" aria-hidden="true">·</span>
+								<span>{post.category}</span>
+								<span class="sep" aria-hidden="true">·</span>
+								<span>{post.minutes} min</span>
+							</div>
+							<h2 class="entry-title">
+								<span>{post.title}</span>
+								<span class="entry-arrow" aria-hidden="true">→</span>
+							</h2>
+							<p class="entry-desc">{post.description}</p>
+						</a>
+					</article>
+				</li>
+			))
+		}
+	</ol>
+
+	<div class="home-more" data-reveal>
+		<MagneticLink href="/en/blog">
+			Full archive <span class="arrow" aria-hidden="true">→</span>
+		</MagneticLink>
+		<a class="arrow-link" href="/en/about">
+			About me <span class="arrow" aria-hidden="true">→</span>
+		</a>
+		<a class="arrow-link" href="/en/forum">
+			Discussion <span class="arrow" aria-hidden="true">→</span>
+		</a>
+	</div>
+
+	<p class="now-line" data-reveal>
+		<span class="now-label">now</span>
+		<span>
+			Simulating <a href="/en/blog/langtons-ant">Langton's ant</a> and
+			tuning a genetic algorithm.
+		</span>
+	</p>
+
+	<AntField variant="classic" />
+</Layout>

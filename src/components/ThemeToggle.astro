@@ -1,11 +1,20 @@
 ---
+import { t, type Locale } from "../i18n/ui";
+
+interface Props {
+	locale?: Locale;
+}
+
+const { locale = "es" } = Astro.props;
 ---
 <button
 	id="theme-toggle"
 	class="theme-toggle"
 	type="button"
-	aria-label="Cambiar tema"
-	title="Cambiar tema"
+	aria-label={t(locale, "theme.aria")}
+	title={t(locale, "theme.aria")}
+	data-label-light={t(locale, "theme.light")}
+	data-label-dark={t(locale, "theme.dark")}
 >
 	<svg
 		class="icon-moon"
@@ -40,10 +49,15 @@
 	const root = document.documentElement;
 
 	if (button) {
+		const labels = {
+			light: button.dataset.labelLight ?? "",
+			dark: button.dataset.labelDark ?? "",
+		};
+
 		const updateLabel = () => {
 			const dark = root.dataset.theme === "dark";
-			button.setAttribute("aria-label", dark ? "Activar tema claro" : "Activar tema oscuro");
-			button.setAttribute("title", dark ? "Activar tema claro" : "Activar tema oscuro");
+			button.setAttribute("aria-label", dark ? labels.light : labels.dark);
+			button.setAttribute("title", dark ? labels.light : labels.dark);
 			button.setAttribute("aria-pressed", String(dark));
 		};
 

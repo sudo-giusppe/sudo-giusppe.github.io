@@ -1,30 +1,43 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro";
+import { t, type Locale } from "../i18n/ui";
+
+interface Props {
+	locale?: Locale;
+	/** URL of this page in the other language; hides the toggle if missing. */
+	altHref?: string | null;
+}
+
+const { locale = "es", altHref = null } = Astro.props;
 
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
 
+const prefix = locale === "en" ? "/en" : "";
 const links = [
-	{ href: "/", label: "inicio" },
-	{ href: "/blog", label: "archivo" },
-	{ href: "/about", label: "acerca" },
-	{ href: "/forum", label: "discusión" },
+	{ href: prefix || "/", label: t(locale, "nav.home") },
+	{ href: `${prefix}/blog`, label: t(locale, "nav.archive") },
+	{ href: `${prefix}/about`, label: t(locale, "nav.about") },
+	{ href: `${prefix}/forum`, label: t(locale, "nav.forum") },
 ];
 
+const isRoot = (href: string) => href === "/" || href === "/en";
 const isActive = (href: string) =>
-	href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`);
+	isRoot(href)
+		? path === href
+		: path === href || path.startsWith(`${href}/`);
 ---
 
 <header class="site-header">
 	<div class="wrap header-inner">
-		<a class="brand" href="/" aria-label="Inicio — JPBM">
+		<a class="brand" href={prefix || "/"} aria-label={t(locale, "brand.aria")}>
 			<span class="brand-name">
 				<span class="brand-mark" aria-hidden="true"></span>
 				JPBM
 			</span>
-			<span class="brand-sub">notas de matemática y sistemas</span>
+			<span class="brand-sub">{t(locale, "brand.sub")}</span>
 		</a>
 
-		<nav class="nav" aria-label="Principal">
+		<nav class="nav" aria-label={t(locale, "nav.aria")}>
 			{
 				links.map((link) => (
 					<a
@@ -36,7 +49,19 @@ const isActive = (href: string) =>
 					</a>
 				))
 			}
-			<ThemeToggle />
+			{
+				altHref && (
+					<a
+						class="nav-link lang-toggle"
+						href={altHref}
+						aria-label={t(locale, "lang.toggle.aria")}
+						title={t(locale, "lang.toggle.aria")}
+					>
+						{locale === "es" ? "EN" : "ES"}
+					</a>
+				)
+			}
+			<ThemeToggle locale={locale} />
 		</nav>
 	</div>
 </header>

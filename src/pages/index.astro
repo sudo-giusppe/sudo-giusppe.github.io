@@ -8,7 +8,7 @@ import { getPosts } from "../data/posts";
 const latest = (await getPosts()).slice(0, 3);
 ---
 
-<Layout title="Inicio">
+<Layout title="Inicio" alt={{ href: "/en/" }}>
 	<section class="intro" data-reveal>
 		<p class="kicker">reciente</p>
 		<h1 class="intro-title">Notas recientes</h1>

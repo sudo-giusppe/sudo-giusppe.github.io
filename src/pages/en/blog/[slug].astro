@@ -1,0 +1,27 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import PostLayout from "../../../layouts/PostLayout.astro";
+import { toPost, slugsFor } from "../../../data/posts";
+
+export async function getStaticPaths() {
+	const entries = await getCollection("posts-en", ({ data }) => !data.draft);
+	return entries.map((entry) => ({
+		params: { slug: entry.slug },
+		props: { entry },
+	}));
+}
+
+interface Props {
+	entry: CollectionEntry<"posts-en">;
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const post = toPost(entry);
+const originals = await slugsFor("es");
+const altHref = originals.has(entry.slug) ? `/blog/${entry.slug}` : null;
+---
+
+<PostLayout post={post} altHref={altHref}>
+	<Content />
+</PostLayout>

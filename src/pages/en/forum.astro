@@ -1,0 +1,124 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import AntField from "../../components/AntField.astro";
+---
+
+<Layout
+	title="Discussion"
+	description="An open room about automata, evolutionary algorithms and systems that produce complex behavior."
+	locale="en"
+	alt={{ href: "/forum" }}
+>
+	<header class="page-head" data-reveal>
+		<p class="kicker">discussion</p>
+		<h1 class="page-title">Open room</h1>
+		<p class="lede">
+			Questions about automata, evolutionary algorithms and systems that
+			produce complex behavior. You don't need to know the answer to ask.
+		</p>
+	</header>
+
+	<section class="room" data-reveal aria-labelledby="room-title">
+		<div class="room-head">
+			<span id="room-title">room / automata and algorithms</span>
+			<span class="room-live">open</span>
+		</div>
+
+		<div
+			class="messages"
+			id="chat-messages"
+			aria-live="polite"
+			aria-label="Room messages"
+		>
+			<div class="message">
+				<span class="message-user">alice</span>
+				<p class="message-text">
+					Why does Langton's ant build a highway after so many steps?
+				</p>
+			</div>
+			<div class="message">
+				<span class="message-user">bob</span>
+				<p class="message-text">
+					Nobody programs the highway: it falls out of the two rules. It's the
+					cleanest example of emergence I know.
+				</p>
+			</div>
+			<div class="message">
+				<span class="message-user">charlie</span>
+				<p class="message-text">
+					Something similar happens in a genetic algorithm: there is no written
+					solution, only selection and variation.
+				</p>
+			</div>
+		</div>
+
+		<form class="composer" id="chat-form">
+			<span class="composer-prompt" aria-hidden="true">&gt;</span>
+			<label class="visually-hidden" for="message-input">Message</label>
+			<input
+				id="message-input"
+				name="message"
+				type="text"
+				autocomplete="off"
+				placeholder="Write a message…"
+			/>
+			<button type="submit">send</button>
+		</form>
+	</section>
+
+	<p class="room-note">
+		Demo room. Messages live in memory and are wiped on reload. Don't post
+		personal data.
+	</p>
+
+	<AntField variant="colony" />
+</Layout>
+
+<script>
+	import { animate } from "motion";
+
+	const form = document.getElementById("chat-form") as HTMLFormElement | null;
+	const input = document.getElementById(
+		"message-input",
+	) as HTMLInputElement | null;
+	const messages = document.getElementById("chat-messages");
+	const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+	const addMessage = (text: string) => {
+		if (!messages) return;
+
+		const row = document.createElement("div");
+		row.className = "message";
+
+		const user = document.createElement("span");
+		user.className = "message-user";
+		user.textContent = "you";
+
+		const body = document.createElement("p");
+		body.className = "message-text";
+		body.textContent = text;
+
+		row.append(user, body);
+		messages.append(row);
+		messages.scrollTop = messages.scrollHeight;
+
+		if (!reduce) {
+			animate(
+				row,
+				{ opacity: [0, 1], y: [7, 0] },
+				{ duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+			);
+		}
+	};
+
+	form?.addEventListener("submit", (event) => {
+		event.preventDefault();
+		const text = input?.value.trim();
+		if (!text) return;
+		addMessage(text);
+		if (input) {
+			input.value = "";
+			input.focus();
+		}
+	});
+</script>

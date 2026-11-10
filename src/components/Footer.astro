@@ -1,14 +1,22 @@
 ---
+import { t, type Locale } from "../i18n/ui";
+
+interface Props {
+	locale?: Locale;
+}
+
+const { locale = "es" } = Astro.props;
 const year = new Date().getFullYear();
+const prefix = locale === "en" ? "/en" : "";
 ---
 <footer class="site-footer">
 	<div class="wrap footer-inner">
 		<p>© {year} José Pedro Barraza</p>
-		<nav class="footer-links" aria-label="Secundario">
-			<a href="/blog">archivo</a>
-			<a href="/about">acerca</a>
-			<a href="/forum">discusión</a>
+		<nav class="footer-links" aria-label={t(locale, "footer.nav.aria")}>
+			<a href={`${prefix}/blog`}>{t(locale, "nav.archive")}</a>
+			<a href={`${prefix}/about`}>{t(locale, "nav.about")}</a>
+			<a href={`${prefix}/forum`}>{t(locale, "nav.forum")}</a>
 		</nav>
-		<p class="footer-note">Hecho con Astro y Motion. Sin rastreadores.</p>
+		<p class="footer-note">{t(locale, "footer.made")}</p>
 	</div>
 </footer>

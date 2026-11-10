@@ -1,7 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
 import PostLayout from "../../layouts/PostLayout.astro";
-import { toPost } from "../../data/posts";
+import { toPost, slugsFor } from "../../data/posts";
 
 export async function getStaticPaths() {
 	const entries = await getCollection("posts", ({ data }) => !data.draft);
@@ -18,8 +18,12 @@ interface Props {
 const { entry } = Astro.props;
 const { Content } = await entry.render();
 const post = toPost(entry);
+const translations = await slugsFor("en");
+const altHref = translations.has(entry.slug)
+	? `/en/blog/${entry.slug}`
+	: null;
 ---
 
-<PostLayout post={post}>
+<PostLayout post={post} altHref={altHref}>
 	<Content />
 </PostLayout>

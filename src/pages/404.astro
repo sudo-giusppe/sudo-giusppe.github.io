@@ -3,7 +3,11 @@ import Layout from "../layouts/Layout.astro";
 import AntField from "../components/AntField.astro";
 ---
 
-<Layout title="Página no encontrada" description="Esa página no existe.">
+<Layout
+	title="Página no encontrada"
+	description="Esa página no existe."
+	alt={{ href: "/en/" }}
+>
 	<header class="page-head" data-reveal>
 		<p class="kicker">error 404</p>
 		<h1 class="page-title">Esa página no existe.</h1>
