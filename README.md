@@ -144,6 +144,17 @@ publicar, haz commit y build.
 - No expongas el puerto a la red. Si de verdad necesitas un proxy inverso,
   usa HTTPS y configura `ADMIN_PUBLIC_URL`; no lo sirvas por HTTP remoto.
 
+## Despliegue
+
+Cada push a `main` compila el sitio y lo publica en GitHub Pages con
+`.github/workflows/deploy.yml`:
+
+https://sudo-giusppe.github.io
+
+El editor `/admin` no se despliega: la build solo genera el sitio público.
+El CSS, las fuentes y las imágenes usan rutas absolutas, así que el sitio vive
+en la raíz del dominio (`<usuario>.github.io`) y no necesita `base` en Astro.
+
 ## Añadir una nota
 
 1. Ejecuta `npm run admin` y entra en `http://127.0.0.1:4321/admin`.
