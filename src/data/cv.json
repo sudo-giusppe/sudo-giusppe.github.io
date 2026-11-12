@@ -1,0 +1,342 @@
+{
+	"updated": "2026-11",
+	"name": "José Pedro Barraza",
+	"location": {
+		"es": "Santiago, Chile",
+		"en": "Santiago, Chile"
+	},
+	"summary": {
+		"es": "Estudiante de Ingeniería en Ciencias de la Computación en la PUC de Chile. Trabajo en sistemas: backend, infraestructura y, últimamente, mainframe IBM Z. Me interesan el código abierto, la seguridad y el rendimiento.",
+		"en": "Computer Science Engineering student at PUC Chile. I work on systems: backend, infrastructure and, lately, the IBM Z mainframe. I care about open source, security and performance."
+	},
+	"links": [
+		{
+			"label": "GitHub",
+			"href": "https://github.com/sudo-giusppe"
+		},
+		{
+			"label": "LinkedIn",
+			"href": "https://www.linkedin.com/in/jose-pedro-barraza-montenegro-a1a943302"
+		},
+		{
+			"label": {
+				"es": "correo",
+				"en": "email"
+			},
+			"href": "mailto:jpbm432@gmail.com"
+		}
+	],
+	"experience": [
+		{
+			"role": {
+				"es": "IBM Z Ambassador",
+				"en": "IBM Z Ambassador"
+			},
+			"org": {
+				"es": "IBM",
+				"en": "IBM"
+			},
+			"place": {
+				"es": "Programa de embajadores IBM Z",
+				"en": "IBM Z ambassador program"
+			},
+			"period": {
+				"es": "2026 — presente",
+				"en": "2026 — present"
+			},
+			"points": [
+				{
+					"es": "Participo en el programa de embajadores de IBM enfocado en la plataforma IBM Z.",
+					"en": "I take part in IBM's ambassador program focused on the IBM Z platform."
+				},
+				{
+					"es": "Obtuve las insignias IBM Z Concepts (z/OS, JCL, z/OSMF) e IBM Z Advanced (COBOL, DB2, VSAM, REXX).",
+					"en": "I earned the IBM Z Concepts (z/OS, JCL, z/OSMF) and IBM Z Advanced (COBOL, DB2, VSAM, REXX) badges."
+				}
+			]
+		},
+		{
+			"role": {
+				"es": "Lead Backend Developer y Coordinador interno",
+				"en": "Lead Backend Developer and Internal Coordinator"
+			},
+			"org": {
+				"es": "Open Source UC — RamosUC",
+				"en": "Open Source UC — RamosUC"
+			},
+			"place": {
+				"es": "Santiago, Chile",
+				"en": "Santiago, Chile"
+			},
+			"period": {
+				"es": "2024 — 2025",
+				"en": "2024 — 2025"
+			},
+			"points": [
+				{
+					"es": "Definimos el stack tecnológico y la arquitectura de RamosUC, plataforma comunitaria de código abierto que ayuda a estudiantes de la UC a elegir sus ramos.",
+					"en": "We defined the technology stack and software architecture of RamosUC, an open-source community platform that helps UC students choose their courses."
+				},
+				{
+					"es": "Desarrollé la API del backend.",
+					"en": "I built the backend API."
+				}
+			]
+		}
+	],
+	"projects": [
+		{
+			"name": "langton-ga",
+			"context": {
+				"es": "Rust, sin dependencias",
+				"en": "Rust, dependency-free"
+			},
+			"period": {
+				"es": "2026",
+				"en": "2026"
+			},
+			"href": "https://github.com/sudo-giusppe/langton-ga",
+			"points": [
+				{
+					"es": "Búsqueda evolutiva distribuida sobre hormigas de Langton generalizadas (túrmites), en Rust sin dependencias externas: simulador determinista, GA por islas y migración top-k asíncrona sobre TCP.",
+					"en": "Distributed evolutionary search over generalized Langton ants (turmites), written in Rust with zero external dependencies: deterministic simulator, island-model GA and asynchronous top-k migration over TCP."
+				},
+				{
+					"es": "Alcanzó 3,14× de speedup en 4 núcleos (78,4 % de eficiencia paralela) con calidad comparable o levemente superior; 22 tests y un paper de 14 páginas.",
+					"en": "Reached 3.14× speedup on 4 cores (78.4% parallel efficiency) with comparable or slightly better quality; 22 tests and a 14-page paper."
+				}
+			]
+		},
+		{
+			"name": "vHive s390x LinuxONE",
+			"context": {
+				"es": "Investigación",
+				"en": "Research"
+			},
+			"period": {
+				"es": "2026 — presente",
+				"en": "2026 — present"
+			},
+			"points": [
+				{
+					"es": "Firecracker se distribuye para x86-64 y aarch64, no para s390x, así que los snapshots de microVM al estilo vHive no son portables de forma directa.",
+					"en": "Firecracker ships for x86-64 and aarch64, not s390x, so vHive-style microVM snapshots are not directly portable."
+				}
+			]
+		},
+		{
+			"name": "Valve Steam Runtime",
+			"context": {
+				"es": "IIC2531 Seguridad Computacional, PUC",
+				"en": "IIC2531 Computer Security, PUC"
+			},
+			"period": {
+				"es": "2026 — presente",
+				"en": "2026 — present"
+			},
+			"points": [
+				{
+					"es": "Enfoque basado en virtio para aislar el programa ejecutado en el runtime del resto de los programas y minimizar la superficie de ataque; trabajamos en un perfil endurecido de pressure-vessel.",
+					"en": "A virtio-based approach to isolate a program running in the runtime from the other programs and shrink the attack surface; we are working on a hardened pressure-vessel profile."
+				}
+			]
+		},
+		{
+			"name": "EnergyShark",
+			"context": {
+				"es": "IIC2173 Arquitectura de Sistemas de Software, PUC",
+				"en": "IIC2173 Software Systems Architecture, PUC"
+			},
+			"period": {
+				"es": "2026 — presente",
+				"en": "2026 — present"
+			},
+			"points": [
+				{
+					"es": "Desarrollé la API del proyecto y el sistema de autenticación con Auth0.",
+					"en": "I developed the project API and the authentication system with Auth0."
+				}
+			]
+		},
+		{
+			"name": {
+				"es": "TLIZ PUC — Taller Linux e IBM Z",
+				"en": "TLIZ PUC — Linux and IBM Z Workshop"
+			},
+			"context": {
+				"es": "Organizador y relator",
+				"en": "Organizer and speaker"
+			},
+			"period": {
+				"es": "2026",
+				"en": "2026"
+			},
+			"points": [
+				{
+					"es": "Lideré y dicté un taller técnico sobre Linux y la arquitectura IBM Z para estudiantes de la PUC, para difundir el ecosistema de infraestructura corporativa de IBM.",
+					"en": "I led and taught a technical workshop on Linux and the IBM Z architecture for PUC students, promoting IBM's enterprise infrastructure ecosystem."
+				}
+			]
+		},
+		{
+			"name": "NTN Components",
+			"context": {
+				"es": "Ruby on Rails, IIC2143 Ingeniería de Software, PUC",
+				"en": "Ruby on Rails, IIC2143 Software Engineering, PUC"
+			},
+			"period": {
+				"es": "2025",
+				"en": "2025"
+			},
+			"points": [
+				{
+					"es": "Desarrollé el backend de un marketplace de componentes de hardware entre personas, con solicitudes de compra, seguimiento de pedidos, mensajería, notificaciones y reseñas.",
+					"en": "I developed the backend of a peer-to-peer hardware component marketplace, with purchase requests, order tracking, messaging, notifications and reviews."
+				},
+				{
+					"es": "Me encargué de la infraestructura y el despliegue en Render; el proyecto superó el 85 % de cobertura de tests.",
+					"en": "I handled the infrastructure and deployment on Render; the project reached test coverage above 85%."
+				}
+			]
+		},
+		{
+			"name": "ThermesChatBot",
+			"context": {
+				"es": "Hackathon Accenture 2024",
+				"en": "Accenture Hackathon 2024"
+			},
+			"period": {
+				"es": "2024",
+				"en": "2024"
+			},
+			"points": [
+				{
+					"es": "Desarrollé una plataforma con un agente de IA que configura la ventana de contexto para desarrolladores; obtuvo el primer lugar en el Hackathon Accenture 2024.",
+					"en": "I developed a platform with an AI agent that configures the context window for developers; it won first place at the Accenture Hackathon 2024."
+				}
+			]
+		}
+	],
+	"education": [
+		{
+			"degree": {
+				"es": "Licenciatura en Ingeniería en Ciencias de la Computación",
+				"en": "B.Sc. in Computer Science Engineering"
+			},
+			"org": {
+				"es": "Pontificia Universidad Católica de Chile",
+				"en": "Pontificia Universidad Católica de Chile"
+			},
+			"place": {
+				"es": "Santiago, Chile",
+				"en": "Santiago, Chile"
+			},
+			"period": {
+				"es": "2028-1",
+				"en": "Expected 2028"
+			}
+		}
+	],
+	"certifications": [
+		{
+			"name": "IBM watsonx: Technical Essentials",
+			"org": "IBM",
+			"year": "2026",
+			"detail": "watsonx.ai, watsonx.data, watsonx.governance"
+		},
+		{
+			"name": "IBM Z Xplore — Advanced",
+			"org": "IBM",
+			"year": "2026",
+			"detail": "COBOL, DB2, VSAM, REXX"
+		},
+		{
+			"name": "IBM Z Xplore — Concepts",
+			"org": "IBM",
+			"year": "2026",
+			"detail": "z/OS, JCL, z/OSMF"
+		}
+	],
+	"skills": [
+		{
+			"label": {
+				"es": "Mainframe",
+				"en": "Mainframe"
+			},
+			"items": [
+				"z/OS",
+				"COBOL",
+				"JCL",
+				"REXX",
+				"DB2",
+				"VSAM"
+			]
+		},
+		{
+			"label": {
+				"es": "Desarrollo",
+				"en": "Development"
+			},
+			"items": [
+				"Python",
+				"C",
+				"Rust",
+				"Ruby",
+				"Bash",
+				"Regex"
+			]
+		},
+		{
+			"label": {
+				"es": "Herramientas",
+				"en": "Tools"
+			},
+			"items": [
+				"Linux",
+				"Git",
+				"Docker",
+				"Ansible",
+				"PostgreSQL",
+				"Ruby on Rails",
+				"Auth0",
+				"Render"
+			]
+		},
+		{
+			"label": {
+				"es": "Conceptos",
+				"en": "Concepts"
+			},
+			"items": [
+				{
+					"es": "arquitectura de software",
+					"en": "software architecture"
+				},
+				{
+					"es": "diseño de APIs",
+					"en": "API design"
+				},
+				{
+					"es": "código abierto",
+					"en": "open source"
+				}
+			]
+		},
+		{
+			"label": {
+				"es": "Idiomas",
+				"en": "Languages"
+			},
+			"items": [
+				{
+					"es": "español (nativo)",
+					"en": "Spanish (native)"
+				},
+				{
+					"es": "inglés (avanzado)",
+					"en": "English (advanced)"
+				}
+			]
+		}
+	]
+}

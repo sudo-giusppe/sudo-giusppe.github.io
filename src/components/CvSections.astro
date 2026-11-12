@@ -1,0 +1,151 @@
+---
+import { cv, text, type Locale } from "../data/cv";
+
+interface Props {
+	locale?: Locale;
+}
+
+const { locale = "es" } = Astro.props;
+const t = (value: Parameters<typeof text>[0]) => text(value, locale);
+
+const labels = {
+	es: {
+		experience: "experiencia",
+		projects: "proyectos",
+		education: "formación",
+		certifications: "certificaciones",
+		skills: "habilidades",
+	},
+	en: {
+		experience: "experience",
+		projects: "projects",
+		education: "education",
+		certifications: "certifications",
+		skills: "skills",
+	},
+}[locale];
+
+const sectionId = (name: string) => `cv-${name}`;
+---
+
+<div class="cv">
+	<section class="cv-section" aria-labelledby={sectionId("experience")} data-reveal>
+		<h2 class="cv-heading" id={sectionId("experience")}>
+			<span class="cv-num" aria-hidden="true">§ 1</span>{labels.experience}
+		</h2>
+		<ol class="cv-list">
+			{
+				cv.experience.map((item) => (
+					<li class="cv-item">
+						<div class="cv-item-head">
+							<h3 class="cv-item-title">{t(item.role)}</h3>
+							<p class="cv-item-period">{t(item.period)}</p>
+						</div>
+						<p class="cv-item-org">
+							{t(item.org)}
+							{item.place && <> · {t(item.place)}</>}
+						</p>
+						{item.points && (
+							<ul class="cv-points">
+								{item.points.map((point) => (
+									<li>{t(point)}</li>
+								))}
+							</ul>
+						)}
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<section class="cv-section" aria-labelledby={sectionId("projects")} data-reveal>
+		<h2 class="cv-heading" id={sectionId("projects")}>
+			<span class="cv-num" aria-hidden="true">§ 2</span>{labels.projects}
+		</h2>
+		<ol class="cv-list">
+			{
+				cv.projects.map((project) => (
+					<li class="cv-item">
+						<div class="cv-item-head">
+							<h3 class="cv-item-title">
+								{project.href ? (
+									<a href={project.href} rel="noopener">
+										{t(project.name)} <span aria-hidden="true">↗</span>
+									</a>
+								) : (
+									t(project.name)
+								)}
+							</h3>
+							{project.period && <p class="cv-item-period">{t(project.period)}</p>}
+						</div>
+						{project.context && <p class="cv-item-org">{t(project.context)}</p>}
+						{project.points && (
+							<ul class="cv-points">
+								{project.points.map((point) => (
+									<li>{t(point)}</li>
+								))}
+							</ul>
+						)}
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<section class="cv-section" aria-labelledby={sectionId("education")} data-reveal>
+		<h2 class="cv-heading" id={sectionId("education")}>
+			<span class="cv-num" aria-hidden="true">§ 3</span>{labels.education}
+		</h2>
+		<ol class="cv-list">
+			{
+				cv.education.map((item) => (
+					<li class="cv-item">
+						<div class="cv-item-head">
+							<h3 class="cv-item-title">{t(item.degree)}</h3>
+							<p class="cv-item-period">{t(item.period)}</p>
+						</div>
+						<p class="cv-item-org">
+							{t(item.org)}
+							{item.place && <> · {t(item.place)}</>}
+						</p>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<section class="cv-section" aria-labelledby={sectionId("certifications")} data-reveal>
+		<h2 class="cv-heading" id={sectionId("certifications")}>
+			<span class="cv-num" aria-hidden="true">§ 4</span>{labels.certifications}
+		</h2>
+		<ul class="cv-certs">
+			{
+				cv.certifications.map((cert) => (
+					<li class="cv-cert">
+						<span class="cv-cert-name">{cert.name}</span>
+						<span class="cv-cert-meta">
+							{cert.org} · {cert.year}
+						</span>
+						{cert.detail && <span class="cv-cert-detail">{cert.detail}</span>}
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<section class="cv-section" aria-labelledby={sectionId("skills")} data-reveal>
+		<h2 class="cv-heading" id={sectionId("skills")}>
+			<span class="cv-num" aria-hidden="true">§ 5</span>{labels.skills}
+		</h2>
+		<dl class="cv-skills">
+			{
+				cv.skills.map((group) => (
+					<div class="cv-skill">
+						<dt>{t(group.label)}</dt>
+						<dd>{group.items.map((item) => t(item)).join(", ")}</dd>
+					</div>
+				))
+			}
+		</dl>
+	</section>
+</div>

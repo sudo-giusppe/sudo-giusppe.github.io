@@ -7,6 +7,8 @@
     "start": "astro dev",
     "admin": "node scripts/admin/server.mjs",
     "admin:password": "node scripts/admin/password.mjs",
+    "cv:pull": "node scripts/cv/sync.mjs pull",
+    "cv:push": "node scripts/cv/sync.mjs push",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

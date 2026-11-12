@@ -1228,12 +1228,34 @@ html[data-theme="dark"] .readout .error {
 	text-wrap: pretty;
 }
 
+.about-contact {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.55rem 1.35rem;
+	margin-top: 1.55rem;
+	font-family: var(--mono);
+	font-size: 0.72rem;
+}
+.about-contact a {
+	color: var(--ink-soft);
+	text-decoration: none;
+}
+.about-contact a span {
+	color: var(--accent);
+}
+.about-contact a:hover {
+	color: var(--ink);
+	text-decoration: underline;
+	text-decoration-color: var(--accent);
+	text-underline-offset: 0.2em;
+}
+
 .about-foot {
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
 	gap: 1.5rem;
-	margin-top: auto;
+	margin-top: 3.2rem;
 	padding-top: 0.9rem;
 	border-top: 1px solid var(--rule);
 	font-family: var(--mono);
@@ -1263,6 +1285,187 @@ html[data-theme="dark"] .readout .error {
 }
 .about-links a:hover span {
 	color: var(--accent);
+}
+
+/* CV: secciones editoriales, sin tarjetas */
+
+.cv {
+	margin-top: 3.6rem;
+}
+
+.cv-section {
+	margin-top: 2.8rem;
+}
+.cv-section:first-child {
+	margin-top: 0;
+}
+
+.cv-heading {
+	display: flex;
+	align-items: baseline;
+	gap: 0.65rem;
+	padding-bottom: 0.55rem;
+	border-bottom: 1px solid var(--rule);
+	font-family: var(--mono);
+	font-size: 0.68rem;
+	font-weight: 400;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+.cv-num {
+	color: var(--rule-strong);
+	letter-spacing: 0;
+}
+
+.cv-list,
+.cv-certs {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cv-item {
+	padding: 1.45rem 0;
+	border-bottom: 1px solid var(--rule-soft);
+}
+.cv-item:last-child {
+	padding-bottom: 0;
+	border-bottom: 0;
+}
+
+.cv-item-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.35rem 1.5rem;
+}
+.cv-item-title {
+	font-size: 1.07rem;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: -0.012em;
+}
+.cv-item-title a {
+	color: inherit;
+	text-decoration-color: var(--accent);
+	text-underline-offset: 0.18em;
+}
+.cv-item-title a span {
+	font-family: var(--mono);
+	font-size: 0.72em;
+	color: var(--accent);
+}
+.cv-item-title a:hover {
+	color: var(--accent-ink);
+}
+.cv-item-period {
+	font-family: var(--mono);
+	font-size: 0.68rem;
+	color: var(--muted);
+	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
+}
+.cv-item-org {
+	margin-top: 0.22rem;
+	font-size: 0.88rem;
+	line-height: 1.45;
+	color: var(--muted);
+}
+
+.cv-points {
+	margin: 0.65rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+.cv-points li {
+	position: relative;
+	padding-left: 1.05rem;
+	font-size: 0.97rem;
+	line-height: 1.56;
+	color: var(--ink-soft);
+}
+.cv-points li + li {
+	margin-top: 0.32rem;
+}
+.cv-points li::before {
+	content: "–";
+	position: absolute;
+	left: 0;
+	color: var(--rule-strong);
+}
+
+.cv-cert {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 0.1rem 1rem;
+	padding: 0.9rem 0;
+	border-bottom: 1px solid var(--rule-soft);
+}
+.cv-cert:last-child {
+	padding-bottom: 0;
+	border-bottom: 0;
+}
+.cv-cert-name {
+	font-size: 0.99rem;
+	font-weight: 600;
+	line-height: 1.4;
+}
+.cv-cert-meta {
+	font-family: var(--mono);
+	font-size: 0.68rem;
+	color: var(--muted);
+	text-align: right;
+	white-space: nowrap;
+}
+.cv-cert-detail {
+	grid-column: 1 / -1;
+	font-size: 0.86rem;
+	line-height: 1.45;
+	color: var(--muted);
+}
+
+.cv-skills {
+	margin: 0;
+}
+.cv-skill {
+	display: grid;
+	grid-template-columns: 8rem 1fr;
+	gap: 0.15rem 1.25rem;
+	padding: 0.62rem 0;
+	border-bottom: 1px solid var(--rule-soft);
+}
+.cv-skill:last-child {
+	padding-bottom: 0;
+	border-bottom: 0;
+}
+.cv-skill dt {
+	padding-top: 0.18rem;
+	font-family: var(--mono);
+	font-size: 0.66rem;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+.cv-skill dd {
+	margin: 0;
+	font-size: 0.95rem;
+	line-height: 1.5;
+	color: var(--ink-soft);
+}
+
+@media (max-width: 34rem) {
+	.cv-skill {
+		grid-template-columns: 1fr;
+		gap: 0.1rem;
+	}
+	.cv-cert {
+		grid-template-columns: 1fr;
+	}
+	.cv-cert-meta {
+		text-align: left;
+	}
 }
 
 /* Fondo vivo: hormiga de Langton */

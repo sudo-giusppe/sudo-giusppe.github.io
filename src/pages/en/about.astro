@@ -1,27 +1,41 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import AntField from "../../components/AntField.astro";
+import CvSections from "../../components/CvSections.astro";
+import { cv, text } from "../../data/cv";
+
+const cut = cv.name.lastIndexOf(" ");
+const firstName = cv.name.slice(0, cut);
+const lastName = cv.name.slice(cut + 1);
 ---
 
 <Layout
 	title="About"
-	description="José Pedro Barraza — LICC, PUC de Chile, IBM Z ambassador."
+	description={`${cv.name} — ${text(cv.summary, "en")}`}
 	locale="en"
 	alt={{ href: "/about" }}
 >
 	<section class="about-page">
 		<header class="about-hero" data-reveal>
 			<p class="kicker">about</p>
-			<h1 class="about-name">José Pedro<br />Barraza</h1>
-			<p class="about-intro">
-				I study at the LICC, PUC of Chile.<br />
-				I'm an IBM Z ambassador.
-			</p>
+			<h1 class="about-name">{firstName}<br />{lastName}</h1>
+			<p class="about-intro">{text(cv.summary, "en")}</p>
+			<nav class="about-contact" aria-label="Personal links">
+				{
+					cv.links.map((link) => (
+						<a href={link.href}>{text(link.label, "en")} <span aria-hidden="true">↗</span></a>
+					))
+				}
+			</nav>
 		</header>
 
+		<CvSections locale="en" />
+
 		<footer class="about-foot" data-reveal>
-			<p class="about-place">Santiago, Chile</p>
-			<nav class="about-links" aria-label="Personal links">
+			<p class="about-place">
+				{text(cv.location, "en")} · updated {cv.updated}
+			</p>
+			<nav class="about-links" aria-label="Site links">
 				<a href="/en/blog">notes <span aria-hidden="true">→</span></a>
 				<a href="/en/forum">discussion <span aria-hidden="true">→</span></a>
 			</nav>

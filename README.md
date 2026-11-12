@@ -12,6 +12,9 @@ Astro y Motion, sin frameworks de UI ni rastreadores.
 - **Bilingüe** — español en `/` e inglés en `/en/…`. El botón EN/ES del
   header alterna entre traducciones; las notas viven en
   `src/content/posts` (es) y `src/content/posts-en` (en) con el mismo slug.
+- **CV en JSON** — la página «acerca» se genera desde `src/data/cv.json`, con
+  textos por idioma. El mismo archivo se sincroniza con un gist privado de
+  GitHub (`npm run cv:pull` / `npm run cv:push`).
 - **Motion** (`motion`) — animaciones con su API vanilla: revelado de secciones,
   entrada escalonada de las filas del archivo, mensajes de la sala y el trazo
   animado del gráfico de portada.
@@ -35,18 +38,21 @@ Astro y Motion, sin frameworks de UI ni rastreadores.
 
 ```text
 /
+├── cv.config.json              # id del gist que guarda el CV
 ├── public/
 │   ├── fonts/                  # tipografías y licencias
 │   ├── images/                 # traza de la hormiga y subidas del editor
 │   └── favicon.svg
-├── scripts/admin/
-│   ├── server.mjs              # servidor local, API y estáticos
-│   ├── auth.mjs                # scrypt, sesiones y límite de intentos
-│   ├── posts.mjs               # lectura/escritura de las notas
-│   ├── markdown.mjs            # vista previa con marked
-│   └── public/                 # interfaz del editor
+├── scripts/
+│   ├── admin/
+│   │   ├── server.mjs          # servidor local, API y estáticos
+│   │   ├── auth.mjs            # scrypt, sesiones y límite de intentos
+│   │   ├── posts.mjs           # lectura/escritura de las notas
+│   │   ├── markdown.mjs        # vista previa con marked
+│   │   └── public/             # interfaz del editor
+│   └── cv/sync.mjs             # pull/push del CV contra el gist
 ├── src/
-│   ├── components/             # Header, Footer, Plot, AntField, SmoothTabs, etc.
+│   ├── components/             # Header, Footer, Plot, AntField, CvSections, etc.
 │   ├── content/
 │   │   ├── config.ts           # esquema del frontmatter (posts y posts-en)
 │   │   ├── posts/*.md          # una nota por archivo (español)
@@ -55,6 +61,8 @@ Astro y Motion, sin frameworks de UI ni rastreadores.
 │   │   └── ui.ts               # textos de la interfaz por idioma
 │   ├── data/
 │   │   ├── posts.ts            # consultas sobre la colección
+│   │   ├── cv.json             # datos del CV (es/en)
+│   │   ├── cv.ts               # tipos y acceso al CV
 │   │   └── fields.json         # variantes del campo de fondo
 │   ├── layouts/
 │   │   ├── Layout.astro        # shell global, tema, revelados
@@ -62,7 +70,7 @@ Astro y Motion, sin frameworks de UI ni rastreadores.
 │   ├── pages/
 │   │   ├── index.astro         # portada
 │   │   ├── blog.astro          # archivo filtrable
-│   │   ├── about.astro
+│   │   ├── about.astro         # CV generado desde data/cv.json
 │   │   ├── forum.astro         # sala de demostración (estado en memoria)
 │   │   ├── 404.astro
 │   │   ├── blog/[slug].astro   # nota generada desde content
@@ -79,6 +87,8 @@ Astro y Motion, sin frameworks de UI ni rastreadores.
 | `npm run dev`     | Servidor de desarrollo en `localhost:3000`  |
 | `npm run admin`   | Editor local en `127.0.0.1:4321/admin`      |
 | `npm run admin:password -- --reset` | Rota la clave del editor       |
+| `npm run cv:pull` | Baja el CV desde el gist a `src/data/cv.json` |
+| `npm run cv:push` | Publica `src/data/cv.json` en el gist       |
 | `npm run build`   | Genera el sitio estático en `./dist/`       |
 | `npm run preview` | Previsualiza la build local                 |
 
@@ -99,6 +109,25 @@ cuadrícula toroidal. Las variantes viven en `src/data/fields.json` y se eligen 
 | Algoritmos genéticos     | `duet`     | RL + LR, dos hormigas       |
 
 Las notas usan `intensity="quiet"` para que el patrón no compita con el texto.
+
+## CV y gist
+
+La página «acerca» (`/about` y `/en/about`) se genera desde
+`src/data/cv.json`. Cada campo de texto acepta un string (igual en ambos
+idiomas) o un objeto `{ "es": …, "en": … }`.
+
+El JSON también vive en un gist secreto de GitHub, que actúa como base de datos
+editable desde la web, el móvil o `gh`:
+
+```sh
+npm run cv:pull   # gist -> src/data/cv.json
+npm run cv:push   # src/data/cv.json -> gist
+```
+
+El id está en `cv.config.json`. La build **no** consulta GitHub: siempre lee el
+JSON local, así que el despliegue es reproducible y no necesita token. Para
+publicar un cambio, edita el gist, ejecuta `npm run cv:pull`, y haz commit del
+JSON actualizado. Requiere `gh auth login` con scope `gist`.
 
 ## Editor local (`/admin`)
 
@@ -173,8 +202,10 @@ en la raíz del dominio (`<usuario>.github.io`) y no necesita `base` en Astro.
   primer pintado para evitar destellos.
 - Movimiento discreto y con respeto a `prefers-reduced-motion`. El contenido
   nunca depende de JavaScript para ser visible.
-- Acerca reduce el texto a nombre, una línea de contexto y dos enlaces. El
-  fondo es una variante de la hormiga de Langton en vivo sobre una cuadrícula
+- Acerca combina un encabezado breve con el CV completo: experiencia,
+  proyectos, formación, certificaciones y habilidades. Los datos viven en un
+  JSON bilingüe y el diseño sigue la misma jerarquía editorial que las notas.
+  El fondo es una variante de la hormiga de Langton en vivo sobre una cuadrícula
   toroidal: se precalienta, cambia de semilla en cada visita y se puede pausar.
   Con movimiento reducido queda como imagen fija. El resto de las vistas usa
   variantes distintas para que cada página tenga su propio patrón.
